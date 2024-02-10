@@ -1,1 +1,1 @@
-# Haskell-Compression-Project
+# compress
