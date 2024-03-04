@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Statistic.ShannonFano
+import Statistic.Huffman
 import Statistic.EncodingTree
 import Statistic.Bit
 
@@ -16,28 +17,40 @@ writeUncompressedToFile filepath content = do
 
 main :: IO ()
 main = do
-    -- Chaîne de caractères à compresser
-    let inputString = "this is an example of a shannon tree"
 
-    -- Compression de la chaîne de caractères en utilisant l'arbre de Shannon-Fano
-    let (maybeCompressedTree, compressedBits) = compress tree inputString
+    putStrLn "Veuillez choisir une technique de compression :"
+    putStrLn "1. Shannon-Fano"
+    putStrLn "2. Huffman"
+    putStrLn "3. LZ78"
+    putStrLn "4. LZW"
+    choice <- getLine
+    case choice of
+        "1" -> do
+            let inputString = "this is an example of a shannon tree"
+            compressWith (compress treeShannonFano inputString) inputString
 
+        "2" -> do
+            let inputString = "this is an example of a huffman tree"  
+            compressWith (compress treeHuffman inputString) inputString
+        _   -> putStrLn "Choix invalide. Veuillez entrer 1 ou 2."
+
+
+compressWith :: (Maybe (EncodingTree Char), [Bit]) -> String -> IO ()
+compressWith (maybeCompressedTree, compressedBits) inputString = do 
     case maybeCompressedTree of
-        Nothing -> putStrLn "La construction de l'arbre Shannon-Fano a échoué."
+        Nothing -> putStrLn "La construction de l'arbre a échoué."
         Just _ -> do
-            putStrLn "Chaîne de caractères d'origine :"
+            putStrLn "\nChaîne de caractères d'origine :\n"
             putStrLn inputString
-            putStrLn "Arbre de Shannon-Fano généré :"
+            putStrLn "\nArbre généré :\n"
             print maybeCompressedTree
-            putStrLn "Chaîne de bits compressée :"
+            putStrLn "\nChaîne de bits compressée :\n"
             putStrLn $ concatMap show compressedBits
-            putStrLn "message en cours de decompression"
+            putStrLn "\nMessage en cours de décompression"
             let maybeValue = uncompress (maybeCompressedTree, compressedBits)
-            putStrLn "message decompresse"
             case maybeValue of
                 Nothing -> putStrLn "La valeur est Nothing."
                 Just val -> do
-                    putStrLn "Message ecrit"
+                    putStrLn "\nMessage décompressé :\n"
                     putStrLn val
-    putStrLn "Fin du programme"
-
+    putStrLn "\nFin du programme"

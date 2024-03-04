@@ -1,16 +1,16 @@
 {- |
   Module : Statistic.ShannonFano
   Description : A module containing specifics for the Shannon-Fano compression method
-  Maintainer : ???
+  Maintainer : RAHMANI Kevin
 -}
-module Statistic.ShannonFano(tree) where
+module Statistic.ShannonFano(treeShannonFano) where
 
 import Statistic.EncodingTree
 import Statistic.Source (orderedCounts)
 
 -- | Shannon-Fano tree generation
-tree :: Ord a => [a] -> Maybe (EncodingTree a)
-tree symbols =
+treeShannonFano :: Ord a => [a] -> Maybe (EncodingTree a)
+treeShannonFano symbols =
     case orderedCounts symbols of
         [] -> Nothing  -- Aucun symbole dans la liste
         counts -> Just $ buildTree counts
