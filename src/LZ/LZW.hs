@@ -51,14 +51,24 @@ compress textToCompress = encode textToCompress ascii "" 256 []
 
 -- | LZW uncompress method
 -- If input cannot be uncompressed, returns `Nothing`
-uncompress :: [Int] -> Maybe String
-uncompress _ = undefined -- TODO
+uncompress :: [Int] -> String 
+uncompress arrayToUnCompress = decode arrayToUnCompress ascii 0 "" 256 "" 
+    where
+        decode :: [Int] -> [String] -> Int -> String -> Int -> String -> String 
+        decode [] dict w _ _ result = result
+        decode (c:cs) dict w prevString nextCode result
+          | c >= 0 && c < length dict = decode cs (dict ++ [prevString ++ currentChar]) c currentChar nextCode (result ++ currentChar)
+          | otherwise = decode cs (dict ++ [prevString ++ currentChar]) c currentChar nextCode (result ++ currentChar)
+          where 
+            currentChar = dict !! c
 
 main :: IO ()
 main = do
-    let input = "Cows graze in groves on grass which grows in grooves in groves"
+    let input = "aaaabaaaa"
     
     let compressed = compress input
     putStrLn $ "Chaîne compressée : " ++ show compressed
 
     putStrLn $ "##################################### COMPRESSION TERMINE ##################################### "
+
+    putStrLn $ "Chaîne decompressée : " ++ uncompress compressed
