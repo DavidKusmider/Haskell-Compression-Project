@@ -85,8 +85,9 @@ uncompress arrayToUnCompress = decode arrayToUnCompress ascii 0 "" 256 ""
                 let currentChar = dict !! c
                     combinedChar = currentChar ++ prevString
                 in case findIndex (== combinedChar) dict of
-                    Just _ ->
-                               trace ("\nWITHIN INDEX DICT -> compressed INT : " ++ show c ++ " | prevString : " ++ prevString ++ "  |  current Char : " ++ currentChar ++ " | prevIndex : " ++ show prevIndex) $
+                    Just index ->
+                               trace ("\nWITHIN INDEX DICT -> compressed INT : " ++ show c ++ " | dict length : " ++ show (length dict) ++ "findIndex : " ++ show index ++ " | prevString : " ++ prevString ++ "  |  current Char : " ++ currentChar ++ " | char add to dict : " ++ (prevString ++ [head currentChar]) ++ " | prevIndex : " ++ show prevIndex) $
+                               trace ("DictionaryJUST: " ++ show (dict ++ [prevString ++ [head currentChar]])) $
                                decode cs dict w currentChar nextCode (result ++ currentChar)
                     Nothing -> trace ("\nNOTHING -> compressed INT : " ++ show c ++ " | dict length : " ++ show (length dict) ++ " | prevString : " ++ prevString ++ "  |  current Char : " ++ currentChar ++ " | char add to dict : " ++ (prevString ++ [head currentChar]) ++ " | prevIndex : " ++ show prevIndex) $
                                trace ("DictionaryNOTH: " ++ show (dict ++ [prevString ++ [head currentChar]])) $
@@ -94,8 +95,8 @@ uncompress arrayToUnCompress = decode arrayToUnCompress ascii 0 "" 256 ""
 
             | otherwise =
                 trace ("\nWITHIN OHTERWISE -> compressed INT : " ++ show c ++ " | dict length : " ++ show (length dict) ++ " | prevString : " ++ prevString ++ "  |  current Char : " ++ " | char add to dict (prevString + impossible de ajouter currentChar) : " ++ prevString ++ " | prevIndex : " ++ show prevIndex) $
-                trace ("DictionaryOTHER: " ++ show (dict ++ ([prevString ++ "b"]))) $
-                decode cs (dict ++ [prevString]) c (prevString ++ "b") nextCode (result ++ (prevString ++ "b"))
+                trace ("DictionaryOTHER: " ++ show (dict ++ ([prevString ++ prevString]))) $
+                decode cs (dict ++ [prevString]) c (prevString ++ [head prevString]) nextCode (result ++ (prevString ++ [head prevString]))
             where 
                 currentChar = dict !! c
                 prevIndex = getIndexOrZero prevString dict
@@ -107,8 +108,10 @@ getIndexOrZero x xs = case elemIndex x xs of
 
 main :: IO ()
 main = do
-    let input = "ababcbababaaaaaaa"
-    let input = "david davide davide"
+    let input = "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée. Généralement, on utilise un texte en faux latin, le Lorem ipsum ou Lipsum."
+    -- let input = "HASKELL C'est de la merde !!!"
+    -- let input = "ababcbababaaaaaaa"
+    let input = "belle echelle"
     
     let compressed = compress input
     putStrLn $ "Chaîne compressée : " ++ show compressed
