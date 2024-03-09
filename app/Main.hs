@@ -7,12 +7,23 @@ import Statistic.Huffman
 import Data.Maybe(fromMaybe)
 import Data.Typeable(typeOf)
 
+import RLE
+
 import System.IO
 
 main :: IO ()
 main = do
     -- Chaîne de caractères à compresser
     let inputString = "this is an example of a huffman tree"
+
+    putStrLn "Compression RLE"
+    let compRLE = RLE.compress inputString
+
+    print compRLE
+    let uncomp = RLE.uncompress compRLE
+    case uncomp of
+        Nothing -> putStrLn "La compression RLE a échoué."
+        Just val -> putStrLn val
 
     -- Construction de l'arbre de Huffman à partir de la chaîne de caractères
     let huffmanTree = tree inputString
