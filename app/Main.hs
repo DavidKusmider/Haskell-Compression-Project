@@ -18,7 +18,7 @@ main = do
     let huffmanTree = tree inputString
 
     -- Compression de la chaîne de caractères en utilisant l'arbre de Huffman
-    let (maybeCompressedTree, compressedBits) = compress tree inputString
+    let (maybeCompressedTree, compressedBits) = Statistic.EncodingTree.compress tree inputString
     -- Gestion des cas où la compression échoue ou où l'arbre de Huffman n'est pas généré avec succès
     case maybeCompressedTree of
         Nothing -> putStrLn "La compression a échoué ou l'arbre de Huffman n'a pas été généré avec succès."
@@ -33,7 +33,7 @@ main = do
             putStrLn "message en cours de decompression"
             print $ typeOf maybeCompressedTree
             print $ typeOf compressedBits
-            let maybeValue = uncompress (maybeCompressedTree, compressedBits)
+            let maybeValue = Statistic.EncodingTree.uncompress (maybeCompressedTree, compressedBits)
             print $ typeOf maybeValue
             putStrLn "message decompresse"
             case maybeValue of
