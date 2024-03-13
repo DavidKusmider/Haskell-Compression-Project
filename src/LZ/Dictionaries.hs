@@ -3,7 +3,7 @@
   Description : A module representing dictionaries from LZ methods
   Maintainer : Romain DUJOL
 -}
-module LZ.Dictionaries(empty, ascii, zeroAsChar) where
+module Dictionaries (Dictionary, empty, ascii, zeroAsChar) where
 
 import Data.Char (chr)
 import Data.List (singleton)
@@ -22,3 +22,4 @@ ascii = map (singleton . chr) [0..255]
 -- | The zero-valued character
 zeroAsChar :: Char
 zeroAsChar = Data.Char.chr 0
+
