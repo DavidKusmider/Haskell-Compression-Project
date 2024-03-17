@@ -4,6 +4,9 @@ import Statistic.ShannonFano
 import Statistic.Huffman
 import Statistic.EncodingTree
 import Statistic.Bit
+import LZ.LZ78
+import LZ.LZW
+import LZ.Dictionaries
 
 import Data.Maybe (fromMaybe)
 import System.IO (openFile, hPutStrLn, hClose, IOMode(AppendMode))
@@ -36,7 +39,7 @@ main = do
 
         "3" -> do
             let str = "aaaaaaaaaaabbbbbbbbbbbbcccccccccccc"
-                dict = [""]
+                dict = empty
                 compressedLZ78 = compressLZ78 str dict
             putStrLn "Chaîne originale :"
             putStrLn str
