@@ -1,4 +1,4 @@
-{- |
+{- | 
   Module : Statistic.Source
   Description : Some utility functions for sources (input messages)
   Maintainer : ???

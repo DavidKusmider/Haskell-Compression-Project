@@ -1,4 +1,4 @@
-{- |
+{- | 
   Module : Statistic.Huffman
   Description : A module containing specifics for the Huffman compression method
   Maintainer : ???

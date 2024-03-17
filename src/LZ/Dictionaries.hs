@@ -1,4 +1,4 @@
-{- |
+{- | 
   Module : LZ.Dictionaries
   Description : A module representing dictionaries from LZ methods
   Maintainer : Romain DUJOL

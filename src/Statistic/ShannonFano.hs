@@ -1,4 +1,4 @@
-{- |
+{- | 
   Module : Statistic.ShannonFano
   Description : A module containing specifics for the Shannon-Fano compression method
   Maintainer : RAHMANI Kevin

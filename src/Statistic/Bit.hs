@@ -1,4 +1,4 @@
-{- |
+{- | 
   Module : Statistic.Bit
   Description : A module representing a bit
   Maintainer : Romain DUJOL

@@ -1,4 +1,4 @@
-{- |
+{- | 
   Module : Statistic.EncodingTree
   Description : A module representing a binary tree for binary encoding
   Maintainer : ???
