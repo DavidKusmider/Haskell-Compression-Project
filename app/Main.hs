@@ -34,6 +34,17 @@ main = do
             compressWith (compress treeHuffman inputString) inputString
         _   -> putStrLn "Choix invalide. Veuillez entrer 1 ou 2."
 
+        "3" -> do
+            let str = "aaaaaaaaaaabbbbbbbbbbbbcccccccccccc"
+                dict = [""]
+                compressedLZ78 = compressLZ78 str dict
+            putStrLn "Chaîne originale :"
+            putStrLn str
+            putStrLn "Chaîne compressée :"
+            print compressedLZ78
+            putStrLn "Chaîne decompressée :"
+            putStrLn $ "Chaîne decompressée : " ++ uncompressLZ78 compressedLZ78 compressedLZ78
+
 
 compressWith :: (Maybe (EncodingTree Char), [Bit]) -> String -> IO ()
 compressWith (maybeCompressedTree, compressedBits) inputString = do 
