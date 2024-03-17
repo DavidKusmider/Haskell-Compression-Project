@@ -29,6 +29,7 @@ has :: Eq a => EncodingTree a -> a -> Bool
 -- | Computes the binary code of symbol using encoding tree
 -- If computation is not possible, returns `Nothing`.
 encode :: Eq a => EncodingTree a -> a -> Maybe [Bit]
+encode (EncodingLeaf _ x) y = Just [Statistic.Bit.Zero]
 encode tree symbol = encodeHelper tree symbol []
   where
     encodeHelper :: Eq a => EncodingTree a -> a -> [Bit] -> Maybe [Bit]
@@ -53,7 +54,7 @@ decode tree bits = case decodeSymbol tree bits of  -- Tente de décompresser un 
 
 -- | Decode a single symbol using the given encoding tree
 decodeSymbol :: EncodingTree a -> [Bit] -> Maybe (a, [Bit])
-decodeSymbol (EncodingLeaf _ symbol) bits = Just (symbol, bits)  -- Si l'arbre est une feuille, le symbole est trouvé
+decodeSymbol (EncodingLeaf _ symbol) bits = Just (symbol, bits)
 decodeSymbol (EncodingNode _ left right) (bit:bits) = case bit of
     Zero -> decodeSymbol left bits  -- Si le bit est 0, cherche le symbole dans le sous-arbre gauche
     One -> decodeSymbol right bits  -- Si le bit est 1, cherche le symbole dans le sous-arbre droit
@@ -89,6 +90,8 @@ uncompress (Just tree, bits) = uncompress' tree bits  -- Sinon, appelle uncompre
 -- | Recursive helper function for uncompression
 uncompress' :: EncodingTree a -> [Bit] -> Maybe [a]
 uncompress' _ [] = Just []  -- Si la liste de bits est vide, retourne une liste vide
+uncompress' (EncodingLeaf x y) bit = case decodeSymbol (EncodingLeaf x y) bit of
+    Just value -> Just [fst value]
 uncompress' tree bits = case decode tree bits of  -- Utilise decode pour décompresser les symboles
     Just symbols -> Just symbols  -- Si la décompression réussit, retourne les symboles décompressés
     Nothing -> Nothing  -- Si la décompression échoue, retourne Nothing
