@@ -45,7 +45,6 @@ main = do
             putStrLn str
             putStrLn "Chaîne compressée :"
             print compressedLZ78
-            putStrLn "Chaîne decompressée :"
             putStrLn $ "Chaîne decompressée : " ++ uncompressLZ78 compressedLZ78 compressedLZ78
 
 
