@@ -1,44 +1,56 @@
 module Main (main) where
 
-import Statistic.Source
-import Statistic.EncodingTree
+import Statistic.ShannonFano
 import Statistic.Huffman
+import Statistic.EncodingTree
+import Statistic.Bit
 
-import Data.Maybe(fromMaybe)
-import Data.Typeable(typeOf)
+import Data.Maybe (fromMaybe)
+import System.IO (openFile, hPutStrLn, hClose, IOMode(AppendMode))
 
-import System.IO
+-- Fonction pour écrire le résultat de uncompress dans un fichier
+writeUncompressedToFile :: FilePath -> String -> IO ()
+writeUncompressedToFile filepath content = do
+    handle <- openFile filepath AppendMode  -- Ouvre le fichier pour écriture
+    hPutStrLn handle content  -- Écrit le contenu dans le fichier
+    hClose handle  -- Ferme le fichier
 
 main :: IO ()
 main = do
-    -- Chaîne de caractères à compresser
-    let inputString = "this is an example of a huffman tree"
 
-    -- Construction de l'arbre de Huffman à partir de la chaîne de caractères
-    let huffmanTree = tree inputString
+    putStrLn "Veuillez choisir une technique de compression :"
+    putStrLn "1. Shannon-Fano"
+    putStrLn "2. Huffman"
+    putStrLn "3. LZ78"
+    putStrLn "4. LZW"
+    choice <- getLine
+    case choice of
+        "1" -> do
+            let inputString = "this is an example of a shannon tree"
+            compressWith (compress treeShannonFano inputString) inputString
 
-    -- Compression de la chaîne de caractères en utilisant l'arbre de Huffman
-    let (maybeCompressedTree, compressedBits) = Statistic.EncodingTree.compress tree inputString
-    -- Gestion des cas où la compression échoue ou où l'arbre de Huffman n'est pas généré avec succès
+        "2" -> do
+            let inputString = "this is an example of a huffman tree"  
+            compressWith (compress treeHuffman inputString) inputString
+        _   -> putStrLn "Choix invalide. Veuillez entrer 1 ou 2."
+
+
+compressWith :: (Maybe (EncodingTree Char), [Bit]) -> String -> IO ()
+compressWith (maybeCompressedTree, compressedBits) inputString = do 
     case maybeCompressedTree of
-        Nothing -> putStrLn "La compression a échoué ou l'arbre de Huffman n'a pas été généré avec succès."
+        Nothing -> putStrLn "La construction de l'arbre a échoué."
         Just _ -> do
-            -- Affichage des résultats si la compression a réussi
-            putStrLn "Chaîne de caractères d'origine :"
+            putStrLn "\nChaîne de caractères d'origine :\n"
             putStrLn inputString
-            putStrLn "Arbre de Huffman généré :"
+            putStrLn "\nArbre généré :\n"
             print maybeCompressedTree
-            putStrLn "Chaîne de bits compressée :"
+            putStrLn "\nChaîne de bits compressée :\n"
             putStrLn $ concatMap show compressedBits
-            putStrLn "message en cours de decompression"
-            print $ typeOf maybeCompressedTree
-            print $ typeOf compressedBits
-            let maybeValue = Statistic.EncodingTree.uncompress (maybeCompressedTree, compressedBits)
-            print $ typeOf maybeValue
-            putStrLn "message decompresse"
+            putStrLn "\nMessage en cours de décompression"
+            let maybeValue = uncompress (maybeCompressedTree, compressedBits)
             case maybeValue of
                 Nothing -> putStrLn "La valeur est Nothing."
                 Just val -> do
-                    putStrLn "Message ecrit"
+                    putStrLn "\nMessage décompressé :\n"
                     putStrLn val
-    putStrLn "Fin du programme"
+    putStrLn "\nFin du programme"
