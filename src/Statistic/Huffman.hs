@@ -3,7 +3,7 @@
   Description : A module containing specifics for the Huffman compression method
   Maintainer : ???
 -}
-module Statistic.Huffman(tree) where
+module Statistic.Huffman(treeHuffman) where
 
 import Data.Map (Map, insertWith, empty, toList)
 import Statistic.Source
@@ -13,14 +13,13 @@ import Data.List (sortOn)
 import Data.Maybe (listToMaybe)
 
 -- | Huffman tree generation
-tree :: Ord a => [a] -> Maybe (EncodingTree a)
-tree [] = Nothing
-tree symbols =
+treeHuffman :: Ord a => [a] -> Maybe (EncodingTree a)
+treeHuffman [] = Nothing
+treeHuffman symbols =
   let leafNodes = sortOn fst $ map (\(s, c) -> (c, EncodingLeaf c s)) $ toList $ occurrences symbols
       huffmanTree = buildHuffmanTree leafNodes
   in listToMaybe huffmanTree
 
--- | Construit l'arbre de Huffman à partir de la liste de feuilles (triée par fréquence)
 buildHuffmanTree :: [(Int, EncodingTree a)] -> [EncodingTree a]
 buildHuffmanTree [] = []
 buildHuffmanTree [(_, tree)] = [tree]
