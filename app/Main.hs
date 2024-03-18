@@ -1,9 +1,10 @@
 module Main (main) where
 
-import Statistic.ShannonFano
+import Statistic.ShannonFano 
 import Statistic.Huffman
-import Statistic.EncodingTree
+import Statistic.EncodingTree as EncodingTree
 import Statistic.Bit
+import LZ.LZW as LZW
 
 import Data.Maybe (fromMaybe)
 import System.IO (openFile, hPutStrLn, hClose, IOMode(AppendMode))
@@ -26,14 +27,32 @@ main = do
     choice <- getLine
     case choice of
         "1" -> do
-            let inputString = "this is an example of a shannon tree"
-            compressWith (compress treeShannonFano inputString) inputString
+            let inputString = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+            compressWith (EncodingTree.compress treeShannonFano inputString) inputString
 
         "2" -> do
             let inputString = "this is an example of a huffman tree"  
-            compressWith (compress treeHuffman inputString) inputString
+            compressWith (EncodingTree.compress treeHuffman inputString) inputString
+
+        "4" -> do
+            let input = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+            compressLZW input
         _   -> putStrLn "Choix invalide. Veuillez entrer 1 ou 2."
 
+
+compressLZW :: String -> IO ()
+compressLZW input = do
+    let compressed = LZW.compress input
+    
+    putStrLn $ "\nChaîne initiale : " ++ input ++ "\n"
+    
+    putStrLn "##################################### START COMPRESS #####################################"
+    putStrLn $ "Chaîne compressée : " ++ show compressed
+    putStrLn "##################################### END COMPRESS #####################################\n"
+    
+    putStrLn "##################################### START UNCOMPRESS #####################################"
+    putStrLn $ "Chaîne décompressée : " ++ LZW.uncompress compressed
+    putStrLn "##################################### END UNCOMPRESS #####################################\n"
 
 compressWith :: (Maybe (EncodingTree Char), [Bit]) -> String -> IO ()
 compressWith (maybeCompressedTree, compressedBits) inputString = do 
@@ -47,7 +66,7 @@ compressWith (maybeCompressedTree, compressedBits) inputString = do
             putStrLn "\nChaîne de bits compressée :\n"
             putStrLn $ concatMap show compressedBits
             putStrLn "\nMessage en cours de décompression"
-            let maybeValue = uncompress (maybeCompressedTree, compressedBits)
+            let maybeValue = EncodingTree.uncompress (maybeCompressedTree, compressedBits)
             case maybeValue of
                 Nothing -> putStrLn "La valeur est Nothing."
                 Just val -> do

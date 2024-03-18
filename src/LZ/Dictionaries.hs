@@ -3,7 +3,7 @@
   Description : A module representing dictionaries from LZ methods
   Maintainer : Romain DUJOL
 -}
-module Dictionaries (Dictionary, empty, ascii, zeroAsChar) where
+module LZ.Dictionaries (Dictionary, empty, ascii, zeroAsChar) where
 
 import Data.Char (chr)
 import Data.List (singleton)

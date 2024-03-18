@@ -4,12 +4,11 @@
   Maintainer  : ???
 -}
 
-module LZW (compress, uncompress) where
+module LZ.LZW (compress, uncompress) where
 
 import Data.Maybe (fromMaybe)
 import Data.List (findIndex, elemIndex)
-import Debug.Trace (trace)
-import Dictionaries
+import LZ.Dictionaries
 
 
 -- | LZW compress method
