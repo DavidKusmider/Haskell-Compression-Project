@@ -20,7 +20,6 @@ treeHuffman symbols =
       huffmanTree = buildHuffmanTree leafNodes
   in listToMaybe huffmanTree
 
--- | Construit l'arbre de Huffman à partir de la liste de feuilles (triée par fréquence)
 buildHuffmanTree :: [(Int, EncodingTree a)] -> [EncodingTree a]
 buildHuffmanTree [] = []
 buildHuffmanTree [(_, tree)] = [tree]
