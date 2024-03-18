@@ -46,11 +46,11 @@ encode tree symbol = encodeHelper tree symbol []
 -- | Computes list of symbols from list of bits using encoding tree
 decode :: EncodingTree a -> [Bit] -> Maybe [a]
 decode _ [] = Just []  -- Si la liste de bits est vide, retourne une liste vide
-decode tree bits = case decodeSymbol tree bits of  -- Tente de décompresser un symbole à partir de l'arbre
-    Just (symbol, remainingBits) -> case decode tree remainingBits of  -- Si un symbole est décompressé avec succès, décompresse récursivement le reste des symboles
-        Just symbols -> Just (symbol : symbols)  -- Ajoute le symbole décompressé à la liste des symboles décompressés
-        Nothing -> Nothing  -- En cas d'échec de la décompression récursive, retourne Nothing
-    Nothing -> Nothing  -- Si aucun symbole ne peut être décompressé à partir de l'arbre, retourne Nothing
+decode tree bits = case decodeSymbol tree bits of
+    Just (symbol, remainingBits) -> case decode tree remainingBits of  -- Si un symbole est decompresse avec succes, decompresse recursivement le reste des symboles
+        Just symbols -> Just (symbol : symbols)
+        Nothing -> Nothing
+    Nothing -> Nothing
 
 -- | Decode a single symbol using the given encoding tree
 decodeSymbol :: EncodingTree a -> [Bit] -> Maybe (a, [Bit])
@@ -58,7 +58,7 @@ decodeSymbol (EncodingLeaf _ symbol) bits = Just (symbol, bits)
 decodeSymbol (EncodingNode _ left right) (bit:bits) = case bit of
     Zero -> decodeSymbol left bits  -- Si le bit est 0, cherche le symbole dans le sous-arbre gauche
     One -> decodeSymbol right bits  -- Si le bit est 1, cherche le symbole dans le sous-arbre droit
-decodeSymbol _ _ = Nothing  -- Si l'arbre est invalide ou si la liste de bits est vide, retourne Nothing
+decodeSymbol _ _ = Nothing
 
 
 -- | Mean length of the binary encoding
@@ -84,14 +84,14 @@ compress treeGenerator input =
 -- | Uncompress method using previously generated encoding tree
 -- If input cannot be uncompressed, returns `Nothing`
 uncompress :: (Maybe (EncodingTree a), [Bit]) -> Maybe [a]
-uncompress (Nothing, _) = Nothing  -- Si l'arbre de codage est Nothing, retourne Nothing
-uncompress (Just tree, bits) = uncompress' tree bits  -- Sinon, appelle uncompress' avec l'arbre et les bits
+uncompress (Nothing, _) = Nothing
+uncompress (Just tree, bits) = uncompress' tree bits
 
 -- | Recursive helper function for uncompression
 uncompress' :: EncodingTree a -> [Bit] -> Maybe [a]
-uncompress' _ [] = Just []  -- Si la liste de bits est vide, retourne une liste vide
+uncompress' _ [] = Just []
 uncompress' (EncodingLeaf x y) bit = case decodeSymbol (EncodingLeaf x y) bit of
     Just value -> Just [fst value]
-uncompress' tree bits = case decode tree bits of  -- Utilise decode pour décompresser les symboles
-    Just symbols -> Just symbols  -- Si la décompression réussit, retourne les symboles décompressés
-    Nothing -> Nothing  -- Si la décompression échoue, retourne Nothing
+uncompress' tree bits = case decode tree bits of  -- Utilise decode pour decompresser les symboles
+    Just symbols -> Just symbols
+    Nothing -> Nothing
