@@ -4,7 +4,9 @@ import Statistic.ShannonFano
 import Statistic.Huffman
 import Statistic.EncodingTree as EncodingTree
 import Statistic.Bit
+import LZ.LZ78
 import LZ.LZW as LZW
+import LZ.Dictionaries
 
 import Data.Maybe (fromMaybe)
 import System.IO (openFile, hPutStrLn, hClose, IOMode(AppendMode))
@@ -33,11 +35,22 @@ main = do
         "2" -> do
             let inputString = "this is an example of a huffman tree"  
             compressWith (EncodingTree.compress treeHuffman inputString) inputString
+        
+        "3" -> do
+            let str = "aaaaaaaaaaabbbbbbbbbbbbcccccccccccc"
+                dict = empty
+                compressedLZ78 = compressLZ78 str dict
+            putStrLn "Chaîne originale :"
+            putStrLn str
+            putStrLn "Chaîne compressée :"
+            print compressedLZ78
+            putStrLn $ "Chaîne decompressée : " ++ uncompressLZ78 compressedLZ78 compressedLZ78
 
         "4" -> do
             let input = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
             compressLZW input
-        _   -> putStrLn "Choix invalide. Veuillez entrer 1 ou 2."
+            _   -> putStrLn "Choix invalide. Veuillez entrer 1 ou 2."
+
 
 
 compressLZW :: String -> IO ()
