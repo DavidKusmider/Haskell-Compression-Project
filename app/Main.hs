@@ -11,6 +11,8 @@ import LZ.Dictionaries
 import Data.Maybe (fromMaybe)
 import System.IO (openFile, hPutStrLn, hClose, IOMode(AppendMode))
 
+import RLE
+
 -- Fonction pour écrire le résultat de uncompress dans un fichier
 writeUncompressedToFile :: FilePath -> String -> IO ()
 writeUncompressedToFile filepath content = do
@@ -31,7 +33,6 @@ main = do
         "1" -> do
             let inputString = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
             compressWith (EncodingTree.compress treeShannonFano inputString) inputString
-
         "2" -> do
             let inputString = "this is an example of a huffman tree"  
             compressWith (EncodingTree.compress treeHuffman inputString) inputString
