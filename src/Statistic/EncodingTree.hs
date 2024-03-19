@@ -66,8 +66,8 @@ meanLength :: EncodingTree a -> Double
 meanLength tree = fromIntegral (sumLengths tree) / fromIntegral (count tree)
   where
     sumLengths :: EncodingTree a -> Int
-    sumLengths (EncodingLeaf count _)     = count
-    sumLengths (EncodingNode _ left right) = sumLengths left + sumLengths right
+    sumLengths (EncodingLeaf c_)     = c
+    sumLengths (EncodingNode c left right) = c + sumLengths left + sumLengths right
 
 
 -- | Compress method using a function generating encoding tree and also returns generated encoding tree
