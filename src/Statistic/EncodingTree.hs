@@ -63,11 +63,17 @@ decodeSymbol _ _ = Nothing
 
 -- | Mean length of the binary encoding
 meanLength :: EncodingTree a -> Double
-meanLength tree = fromIntegral (sumLengths tree) / fromIntegral (count tree)
+meanLength tree = totalLength / fromIntegral totalFrequency
   where
-    sumLengths :: EncodingTree a -> Int
-    sumLengths (EncodingLeaf c_)     = c
-    sumLengths (EncodingNode c left right) = c + sumLengths left + sumLengths right
+    (totalLength, totalFrequency) = traverseTree 0 0 tree
+
+    traverseTree :: Int -> Int -> EncodingTree a -> (Double, Int)
+    traverseTree depth freq (EncodingLeaf f _) = (fromIntegral (depth * f), f)
+    traverseTree depth freq (EncodingNode f left right) =
+      let (leftLength, leftFreq) = traverseTree (depth + 1) freq left
+          (rightLength, rightFreq) = traverseTree (depth + 1) freq right
+      in (leftLength + rightLength, leftFreq + rightFreq)
+
 
 
 -- | Compress method using a function generating encoding tree and also returns generated encoding tree
