@@ -12,13 +12,12 @@ import Debug.Trace
 import LZ.Dictionaries
 
 
--- Compress with dictionary trace
+-- | LZW compress method
 compress :: String -> [Int]
 compress textToCompress = encode textToCompress ascii "" 256 []
   where
     encode :: String -> [String] -> String -> Int -> [Int] -> [Int]
     encode [] dict w _ result = 
-      trace ("Dictionary: " ++ show dict) $
         case findIndex (== w) dict of
           Just index -> result ++ [index]
           Nothing    -> []
@@ -31,14 +30,15 @@ compress textToCompress = encode textToCompress ascii "" 256 []
         code = fromMaybe (error "not found") (findIndex (== w) dict)
         newDict = dict ++ [p]
 
--- Uncompress with dictionary trace
-uncompress :: [Int] -> String 
-uncompress arrayToUnCompress = decode arrayToUnCompress ascii 0 "" 256 "" 
+
+-- | LZW uncompress method
+-- If input cannot be uncompressed, returns `Nothing`
+uncompress :: [Int] -> Maybe String 
+uncompress arrayToUnCompress = Just $ decode arrayToUnCompress ascii 0 "" 256 "" 
   where
     decode :: [Int] -> [String] -> Int -> String -> Int -> String -> String 
     decode [] dict w _ _ result = 
-      trace ("Dictionary: " ++ show dict) $
-        result
+       result
     decode (c:cs) dict w prevString nextCode result
       | c >= 0 && c < length dict = 
           case elemIndex combinedChar dict of

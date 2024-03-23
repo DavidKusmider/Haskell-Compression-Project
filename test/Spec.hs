@@ -1,8 +1,9 @@
 import RLE
---import LZ.LZ78
---import LZ.LZW
--- import Statistic.Huffman
--- import Statistic.ShannonFano
+import LZ.LZ78bis
+import LZ.LZW
+import Statistic.Huffman
+import Statistic.ShannonFano
+import Statistic.EncodingTree
 
 import Test.Hspec
 import Control.Monad
@@ -42,14 +43,15 @@ spec_function = do
         describe (printf "Testing string : '%s'" inputAsString) $ do
             it "RLE " $
                 RLE.uncompress (RLE.compress inputAsString) `shouldBe` (Just inputAsString)
-            -- it "LZ78 "$
-            --     uncompressLZ78 (compressLZ78 inputAsString) `shouldBe` (Just inputAsString)
-            -- it "LZW "$
-            --     LZW.uncompress (LZW.compress inputAsString) `shouldBe` (Just inputAsString)
-            -- it "ShanonFano "$
-            --     todo
-            -- it "Huffman "$
-            --     todo
+            it "LZ78b "$
+                LZ.LZ78bis.uncompress (LZ.LZ78bis.compress inputAsString) `shouldBe` (Just inputAsString)
+            it "LZW "$
+                 LZ.LZW.uncompress (LZ.LZW.compress inputAsString) `shouldBe` (Just inputAsString)
+            it "ShanonFano "$
+                Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.ShannonFano.treeShannonFano inputAsString) `shouldBe` (Just inputAsString)
+            it "Huffman "$
+                Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.Huffman.treeHuffman inputAsString) `shouldBe` (Just inputAsString)
+ 
 
 
 main :: IO ()
