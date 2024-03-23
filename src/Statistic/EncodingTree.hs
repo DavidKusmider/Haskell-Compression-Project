@@ -3,7 +3,7 @@
   Description : A module representing a binary tree for binary encoding
   Maintainer : ???
 -}
-module Statistic.EncodingTree(EncodingTree(..), isLeaf, count, has, encode, decodeSymbol, decode, meanLength, compress, uncompress) where
+module Statistic.EncodingTree(EncodingTree(..), isLeaf, count, has, encode, decodeOnce, decode, meanLength, compress, uncompress) where
 
 import Statistic.Bit
 
@@ -96,9 +96,9 @@ uncompress (Just tree, bits) = uncompress' tree bits
 -- | Recursive helper function for uncompression
 uncompress' :: EncodingTree a -> [Bit] -> Maybe [a]
 uncompress' _ [] = Just []
-uncompress' (EncodingLeaf x y) bit = case decodeSymbol (EncodingLeaf x y) bit of
-    Just value -> Just [fst value]
-    Nothing -> Nothing
+--uncompress' (EncodingLeaf x y) bit = case decodeOnce (EncodingLeaf x y) bit of
+--    Just value -> Just [fst value]
+--    Nothing -> Nothing
 uncompress' tree bits = case decode tree bits of  -- Utilise decode pour decompresser les symboles
     Just symbols -> Just symbols
     Nothing -> Nothing
