@@ -46,19 +46,19 @@ encode tree symbol = encodeHelper tree symbol []
 -- | Computes list of symbols from list of bits using encoding tree
 decode :: EncodingTree a -> [Bit] -> Maybe [a]
 decode _ [] = Just []  -- Si la liste de bits est vide, retourne une liste vide
-decode tree bits = case decodeSymbol tree bits of
+decode tree bits = case decodeOnce tree bits of
     Just (symbol, remainingBits) -> case decode tree remainingBits of  -- Si un symbole est decompresse avec succes, decompresse recursivement le reste des symboles
         Just symbols -> Just (symbol : symbols)
         Nothing -> Nothing
     Nothing -> Nothing
 
 -- | Decode a single symbol using the given encoding tree
-decodeSymbol :: EncodingTree a -> [Bit] -> Maybe (a, [Bit])
-decodeSymbol (EncodingLeaf _ symbol) bits = Just (symbol, bits)
-decodeSymbol (EncodingNode _ left right) (bit:bits) = case bit of
-    Zero -> decodeSymbol left bits  -- Si le bit est 0, cherche le symbole dans le sous-arbre gauche
-    One -> decodeSymbol right bits  -- Si le bit est 1, cherche le symbole dans le sous-arbre droit
-decodeSymbol _ _ = Nothing
+decodeOnce :: EncodingTree a -> [Bit] -> Maybe (a, [Bit])
+decodeOnce (EncodingLeaf _ symbol) bits = Just (symbol, bits)
+decodeOnce (EncodingNode _ left right) (bit:bits) = case bit of
+    Zero -> decodeOnce left bits  -- Si le bit est 0, cherche le symbole dans le sous-arbre gauche
+    One -> decodeOnce right bits  -- Si le bit est 1, cherche le symbole dans le sous-arbre droit
+decodeOnce _ _ = Nothing
 
 
 -- | Mean length of the binary encoding
