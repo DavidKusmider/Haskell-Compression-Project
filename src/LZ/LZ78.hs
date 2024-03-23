@@ -1,4 +1,4 @@
-module LZ.LZ78(compressLZ78, uncompressLZ78, findLongestPrefix, removePrefix) where
+module LZ.LZ78(compress, uncompress, findLongestPrefix, removePrefix) where
 
 import Data.List (elemIndex, findIndex, isPrefixOf)
 import Data.Maybe (fromMaybe)
@@ -6,10 +6,9 @@ import Debug.Trace (traceShow)
 
 
 
-compressLZ78 :: String -> [String] -> [(Int, Maybe Char)]
--- compressLZ78 _ = undefined -- TODO
-compressLZ78 [] _ = [] -- Si la chaîne est vide, retourner une liste vide
-compressLZ78 str dict = go str dict [] --[] est la chaine compressee
+compress :: String -> [String] -> [(Int, Maybe Char)]
+compress [] _ = [] -- Si la chaîne est vide, retourner une liste vide
+compress str dict = go str dict [] --[] est la chaine compressee
   where
     go [] _ compressed = compressed -- Si le string est vide, retourner la chaîne compressée
     go str dict compressed =
@@ -22,8 +21,8 @@ compressLZ78 str dict = go str dict [] --[] est la chaine compressee
           newCompressed = compressed ++ [(index, compressedChar)]
       in traceShow (prefix, newDict, newCompressed) $ go string' newDict newCompressed --traceShow pour l'affichage
 
-uncompressLZ78 :: [(Int, Maybe Char)] -> [(Int, Maybe Char)]  -> String
-uncompressLZ78 compressedData compressedTab = go compressedData compressedData [] -- Initialiser la chaine décompressée avec une chaîne vide, compressedtab est compressedData vidé 
+uncompress :: [(Int, Maybe Char)] -> [(Int, Maybe Char)]  -> String
+uncompress compressedData compressedTab = go compressedData compressedData [] -- Initialiser la chaine décompressée avec une chaîne vide, compressedtab est compressedData vidé 
   where
     go compressedData [] decompressed = decompressed -- Si on a finit de parcourir compressedTab, retourner la chaîne décompressée
     go compressedData ((index, compressedChar):rest) decompressed =
@@ -66,7 +65,7 @@ removePrefix prefix str
 
 
 
-getPrefixAtIndex :: Int -> [(Int, Maybe Char)] -> String
+getPrefixAtIndex :: Int -> [(Int, Maybe Char)] -> String --permet de recup le prefix correspondant a un index
 getPrefixAtIndex index compressedData = go index compressedData ""
   where
     go 0 _ prefix = prefix -- Quand on a fini
