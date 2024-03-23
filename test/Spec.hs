@@ -1,13 +1,26 @@
 import RLE
+--import LZ.LZ78
+--import LZ.LZW
+-- import Statistic.Huffman
+-- import Statistic.ShannonFano
+
 import Test.Hspec
 import Control.Monad
 import Data.Semigroup
+
+import qualified Data.Text as Text
+import Data.Text (Text)
+import Data.Text as Text
+import Data.Text.IO as Text
+import Text.Printf
+
 
 -- if running without stack on windows, run terminal as admin
     -- >choco install cabal 
     -- >cabal update
     -- >cabal install hspec
     -- >cabal install --lib hspec
+    -- >cabal install --lib text
 
 
 -- to run test, open terminal in root directory then :
@@ -16,19 +29,28 @@ import Data.Semigroup
 
 -- you can refresh file with :
 -- ghci> :l test\Spec.hs 
+
+
+readExamples :: IO [Text]
+readExamples = Text.lines <$> Text.readFile "test/testdata.txt"
+
 spec_function :: Spec
 spec_function = do 
-    describe "Test compression / décompression RLE" $ do
-        it "simple string" $
-            uncompress (compress "aabbbcdeeee") `shouldBe` (Just "aabbbcdeeee")
-        it "ex2 "$
-            2 `shouldBe` 2
+    examples <- runIO readExamples
+    forM_ examples $ \input ->
+        let inputAsString = unpack input in
+        describe (printf "Testing string : '%s'" inputAsString) $ do
+            it "RLE " $
+                RLE.uncompress (RLE.compress inputAsString) `shouldBe` (Just inputAsString)
+            -- it "LZ78 "$
+            --     uncompressLZ78 (compressLZ78 inputAsString) `shouldBe` (Just inputAsString)
+            -- it "LZW "$
+            --     LZW.uncompress (LZW.compress inputAsString) `shouldBe` (Just inputAsString)
+            -- it "ShanonFano "$
+            --     todo
+            -- it "Huffman "$
+            --     todo
 
-    describe "Test compression / décompression LZ" $ do
-        it "foobar string" $
-            3 `shouldBe` 3
-        it "bardofdqsf"$
-            2 `shouldBe` 2
 
 main :: IO ()
 main = hspec spec_function
