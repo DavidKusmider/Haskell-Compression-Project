@@ -52,6 +52,14 @@ decode tree bits = case decodeOnce tree bits of
         Nothing -> Nothing
     Nothing -> Nothing
 
+decode' :: EncodingTree a -> [Bit] -> Maybe [a]
+decode' _ [] = Just []  -- Si la liste de bits est vide, retourne une liste vide
+decode' tree bits = case decodeOnce' tree bits of
+    Just (symbol, remainingBits) -> case decode' tree remainingBits of  -- Si un symbole est decompresse avec succes, decompresse recursivement le reste des symboles
+        Just symbols -> Just (symbol : symbols)
+        Nothing -> Nothing
+    Nothing -> Nothing
+
 -- | Decode a single symbol using the given encoding tree
 decodeOnce :: EncodingTree a -> [Bit] -> Maybe (a, [Bit])
 decodeOnce (EncodingLeaf _ symbol) bits = Just (symbol, bits)
@@ -60,6 +68,12 @@ decodeOnce (EncodingNode _ left right) (bit:bits) = case bit of
     One -> decodeOnce right bits  -- Si le bit est 1, cherche le symbole dans le sous-arbre droit
 decodeOnce _ _ = Nothing
 
+decodeOnce' :: EncodingTree a -> [Bit] -> Maybe (a, [Bit])
+decodeOnce' (EncodingLeaf _ symbol) (b:bits) = Just (symbol, bits)
+decodeOnce' (EncodingNode _ left right) (bit:bits) = case bit of
+    Zero -> decodeOnce' left bits  -- Si le bit est 0, cherche le symbole dans le sous-arbre gauche
+    One -> decodeOnce' right bits  -- Si le bit est 1, cherche le symbole dans le sous-arbre droit
+decodeOnce' _ _ = Nothing
 
 -- | Mean length of the binary encoding
 meanLength :: EncodingTree a -> Double
@@ -96,9 +110,9 @@ uncompress (Just tree, bits) = uncompress' tree bits
 -- | Recursive helper function for uncompression
 uncompress' :: EncodingTree a -> [Bit] -> Maybe [a]
 uncompress' _ [] = Just []
---uncompress' (EncodingLeaf x y) bit = case decodeOnce (EncodingLeaf x y) bit of
---    Just value -> Just [fst value]
---    Nothing -> Nothing
+uncompress' (EncodingLeaf x y) bit = case decode' (EncodingLeaf x y) bit of
+    Just value -> Just value
+    Nothing -> Nothing
 uncompress' tree bits = case decode tree bits of  -- Utilise decode pour decompresser les symboles
     Just symbols -> Just symbols
     Nothing -> Nothing
