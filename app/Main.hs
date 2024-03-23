@@ -54,6 +54,7 @@ main = do
 
 
 
+
 compressLZW :: String -> IO ()
 compressLZW input = do
     let compressed = LZW.compress input
@@ -65,8 +66,11 @@ compressLZW input = do
     putStrLn "##################################### END COMPRESS #####################################\n"
     
     putStrLn "##################################### START UNCOMPRESS #####################################"
-    putStrLn $ "Chaîne décompressée : " ++ LZW.uncompress compressed
+    case LZW.uncompress compressed of
+        Just uncompressed -> putStrLn $ "Chaîne décompressée : " ++ uncompressed
+        Nothing -> putStrLn "Impossible de décompresser la chaîne."
     putStrLn "##################################### END UNCOMPRESS #####################################\n"
+
 
 compressRLE :: String -> IO ()
 compressRLE input = do
