@@ -63,11 +63,17 @@ decodeSymbol _ _ = Nothing
 
 -- | Mean length of the binary encoding
 meanLength :: EncodingTree a -> Double
-meanLength tree = fromIntegral (sumLengths tree) / fromIntegral (count tree)
+meanLength tree = totalLength / fromIntegral totalFrequency
   where
-    sumLengths :: EncodingTree a -> Int
-    sumLengths (EncodingLeaf count _)     = count
-    sumLengths (EncodingNode _ left right) = sumLengths left + sumLengths right
+    (totalLength, totalFrequency) = traverseTree 0 0 tree
+
+    traverseTree :: Int -> Int -> EncodingTree a -> (Double, Int)
+    traverseTree depth freq (EncodingLeaf f _) = (fromIntegral (depth * f), f)
+    traverseTree depth freq (EncodingNode f left right) = (leftLength + rightLength, leftFreq + rightFreq)
+      where 
+        (leftLength, leftFreq) = traverseTree (depth + 1) freq left
+        (rightLength, rightFreq) = traverseTree (depth + 1) freq right
+
 
 
 -- | Compress method using a function generating encoding tree and also returns generated encoding tree
@@ -75,10 +81,10 @@ compress :: Eq a => ([a] -> Maybe (EncodingTree a)) -> [a] -> (Maybe (EncodingTr
 compress treeGenerator input =
   case treeGenerator input of
     Nothing   -> (Nothing, [])
-    Just tree -> let encodedInput = mapM (encode tree) input in
-                 case encodedInput of
+    Just tree -> case encodedInput of
                    Nothing -> (Nothing, [])
                    Just bits -> (Just tree, concat bits)
+                   where encodedInput = mapM (encode tree) input
 
 
 -- | Uncompress method using previously generated encoding tree
@@ -92,6 +98,7 @@ uncompress' :: EncodingTree a -> [Bit] -> Maybe [a]
 uncompress' _ [] = Just []
 uncompress' (EncodingLeaf x y) bit = case decodeSymbol (EncodingLeaf x y) bit of
     Just value -> Just [fst value]
+    Nothing -> Nothing
 uncompress' tree bits = case decode tree bits of  -- Utilise decode pour decompresser les symboles
     Just symbols -> Just symbols
     Nothing -> Nothing

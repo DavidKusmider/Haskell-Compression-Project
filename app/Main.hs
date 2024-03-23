@@ -3,6 +3,7 @@ module Main (main) where
 import Statistic.ShannonFano 
 import Statistic.Huffman
 import Statistic.EncodingTree as EncodingTree
+import Statistic.Source (entropy)
 import Statistic.Bit
 import LZ.LZ78
 import LZ.LZW as LZW
@@ -25,7 +26,7 @@ main = do
             let inputString = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
             compressWith (EncodingTree.compress treeShannonFano inputString) inputString
         "2" -> do
-            let inputString = "this is an example of a huffman tree"  
+            let inputString = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
             compressWith (EncodingTree.compress treeHuffman inputString) inputString
         
         "3" -> do
@@ -90,18 +91,29 @@ compressWith :: (Maybe (EncodingTree Char), [Bit]) -> String -> IO ()
 compressWith (maybeCompressedTree, compressedBits) inputString = do 
     case maybeCompressedTree of
         Nothing -> putStrLn "La construction de l'arbre a échoué."
-        Just _ -> do
+        Just tree -> do
             putStrLn "\nChaîne de caractères d'origine :\n"
             putStrLn inputString
+
+            let ent = entropy inputString
+            putStrLn $ "\nEntropie : " ++ show ent
+
+            let meanLengthValue = EncodingTree.meanLength tree
+            putStrLn $ "\nLongueur moyenne de l'encodage binaire : " ++ show meanLengthValue
+
             putStrLn "\nArbre généré :\n"
-            print maybeCompressedTree
+            print tree
+
             putStrLn "\nChaîne de bits compressée :\n"
             putStrLn $ concatMap show compressedBits
+
             putStrLn "\nMessage en cours de décompression"
             let maybeValue = EncodingTree.uncompress (maybeCompressedTree, compressedBits)
+
             case maybeValue of
                 Nothing -> putStrLn "La valeur est Nothing."
                 Just val -> do
                     putStrLn "\nMessage décompressé :\n"
                     putStrLn val
     putStrLn "\nFin du programme"
+
