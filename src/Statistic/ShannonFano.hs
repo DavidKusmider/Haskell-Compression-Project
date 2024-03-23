@@ -19,13 +19,11 @@ treeShannonFano symbols =
     buildTree :: Ord a => [(a, Int)] -> EncodingTree a
     buildTree [] = error "La liste des symboles ne devrait pas être vide"
     buildTree [(sym, occurrence)] = EncodingLeaf occurrence sym  -- Base case: leaf with a symbol
-    buildTree counts =
-        let
-            (leftCounts, rightCounts) = splitCounts counts  -- Divide the counts into two parts
-            leftSubtree = buildTree leftCounts  -- Build left subtree recursively
-            rightSubtree = buildTree rightCounts  -- Build right subtree recursively
-        in
-            EncodingNode (sumCounts counts) leftSubtree rightSubtree  -- Node with left and right subtrees
+    buildTree counts = EncodingNode (sumCounts counts) leftSubtree rightSubtree
+      where
+        (leftCounts, rightCounts) = splitCounts counts  -- Divide the counts into two parts
+        leftSubtree = buildTree leftCounts  -- Build left subtree recursively
+        rightSubtree = buildTree rightCounts  -- Build right subtree recursively
 
     -- Divise les comptages en deux parties équilibrées
     splitCounts :: [(a, Int)] -> ([(a, Int)], [(a, Int)])
@@ -34,17 +32,12 @@ treeShannonFano symbols =
         -- Fonction auxiliaire pour la répartition équilibrée des occurrences
         splitHelper :: [(a, Int)] -> [(a, Int)] -> [(a, Int)] -> ([(a, Int)], [(a, Int)])
         splitHelper [] left right = (left, right)
-        splitHelper (x:xs) left right =
-          let
+        splitHelper (x:xs) left right = splitHelper xs newLeft newRight
+          where
             leftSum = sumCounts left
             totalSum = (leftSum + sumCounts (x:xs)) `div` 2 
-            -- Choix de la liste où ajouter le tuple en fonction des sommes CHECKER SI <= OU < 
             (newLeft, newRight) = if leftSum  + sumCounts [x] <= totalSum then (left ++ [x], right) else (left, right ++ [x])
-          in
-            splitHelper xs newLeft newRight
 
     -- Calcule la somme des comptages dans une liste de paires (symbole, comptage)
     sumCounts :: [(a, Int)] -> Int
     sumCounts = sum . map snd
-
-
