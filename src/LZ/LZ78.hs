@@ -1,15 +1,14 @@
-module LZ.LZ78(compressLZ78, uncompressLZ78, findLongestPrefix, removePrefix) where
+module LZ.LZ78(compress, uncompress, findLongestPrefix, removePrefix) where
 
-import Data.List (elemIndex, findIndex, isPrefixOf)
+import Data.List (elemIndex, isPrefixOf)
 import Data.Maybe (fromMaybe)
-import Debug.Trace (traceShow)
 
 
 
-compressLZ78 :: String -> [String] -> [(Int, Maybe Char)]
--- compressLZ78 _ = undefined -- TODO
-compressLZ78 [] _ = [] -- Si la chaîne est vide, retourner une liste vide
-compressLZ78 str dict = go str dict [] --[] est la chaine compressee
+
+compress :: String -> [String] -> [(Int, Char)]
+compress [] _ = [] -- Si la chaîne est vide, retourner une liste vide
+compress str dict = go str dict [] --[] est la chaine compressee
   where
     go [] _ compressed = compressed -- Si le string est vide, retourner la chaîne compressée
     go str dict compressed =
@@ -20,10 +19,10 @@ compressLZ78 str dict = go str dict [] --[] est la chaine compressee
           (compressedChar, string') = nextCharNextStringAfterPrefix prefix str
           newDict = dict ++ [concatMaybeChar compressedChar prefix]
           newCompressed = compressed ++ [(index, compressedChar)]
-      in traceShow (prefix, newDict, newCompressed) $ go string' newDict newCompressed --traceShow pour l'affichage
+      in go string' newDict newCompressed --traceShow pour l'affichage
 
-uncompressLZ78 :: [(Int, Maybe Char)] -> [(Int, Maybe Char)]  -> String
-uncompressLZ78 compressedData compressedTab = go compressedData compressedData [] -- Initialiser la chaine décompressée avec une chaîne vide, compressedtab est compressedData vidé 
+uncompress :: [(Int, Char)] -> [(Int, Char)]  -> String
+uncompress compressedData compressedTab = go compressedData compressedData [] -- Initialiser la chaine décompressée avec une chaîne vide, compressedtab est compressedData vidé 
   where
     go compressedData [] decompressed = decompressed -- Si on a finit de parcourir compressedTab, retourner la chaîne décompressée
     go compressedData ((index, compressedChar):rest) decompressed =
@@ -34,19 +33,15 @@ uncompressLZ78 compressedData compressedTab = go compressedData compressedData [
 
 --FONCTIONS
 
-concatMaybeChar :: Maybe Char -> String -> String --pour concaténer prefixe (String) avec compressedChar(Maybe Char)
-concatMaybeChar Nothing str = str -- Si Maybe Char est Nothing, renvoyer simplement la chaîne
-concatMaybeChar (Just c) str = str ++ [c] -- Si Maybe Char contient un caractère, concaténer le caractère à la fin de la chaîne
+concatMaybeChar :: Char -> String -> String --pour concaténer prefixe (String) avec compressedChar(qui est peut etre '\0')
+concatMaybeChar '\0' str = str -- Si Maybe Char est Nothing, renvoyer simplement la chaîne
+concatMaybeChar c str = str ++ [c] -- Si Maybe Char contient un caractère, concaténer le caractère à la fin de la chaîne
 
-nextCharNextStringAfterPrefix :: String -> String -> (Maybe Char, String) --retourne le nextChar et le restant du string
+nextCharNextStringAfterPrefix :: String -> String -> (Char, String) --retourne le nextChar et le restant du string
 nextCharNextStringAfterPrefix prefix str = -- on regarde si il y a un char 
     case removePrefix prefix str of
-        (c:rest) -> let compressedChar = Just c
-                        string' = rest
-                    in (compressedChar, string')
-        _        -> let compressedChar = Nothing
-                        string' = []
-                    in (compressedChar, string')
+        (c:rest) -> (c, rest)
+        _        -> ('\0', [])
 
 
 findLongestPrefix :: String -> [String] -> String
@@ -66,11 +61,11 @@ removePrefix prefix str
 
 
 
-getPrefixAtIndex :: Int -> [(Int, Maybe Char)] -> String
+getPrefixAtIndex :: Int -> [(Int, Char)] -> String --permet de recup le prefix correspondant a un index
 getPrefixAtIndex index compressedData = go index compressedData ""
   where
     go 0 _ prefix = prefix -- Quand on a fini
-    go index compressedData prefix = 
+    go index compressedData prefix = --si l'index ne vaut pas 0, on continue de constituer le prefixe
       case compressedData !! (index-1) of --si on trouve bien quelque chose 
         (i, maybeChar) -> 
           go i compressedData (concatMaybeChar maybeChar "" ++ prefix)
