@@ -5,7 +5,7 @@ import Statistic.Huffman
 import Statistic.EncodingTree as EncodingTree
 import Statistic.Source (entropy)
 import Statistic.Bit
-import LZ.LZ78bis as LZ78
+import LZ.LZ78 as LZ78
 import LZ.LZW as LZW
 import LZ.Dictionaries
 

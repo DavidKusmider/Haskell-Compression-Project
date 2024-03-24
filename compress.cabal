@@ -22,7 +22,6 @@ library
   exposed-modules:
       LZ.Dictionaries
       LZ.LZ78
-      LZ.LZ78bis
       LZ.LZW
       RLE
       Statistic.Bit

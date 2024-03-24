@@ -104,6 +104,7 @@ compress treeGenerator input =
 -- | Uncompress method using previously generated encoding tree
 -- If input cannot be uncompressed, returns `Nothing`
 uncompress :: (Maybe (EncodingTree a), [Bit]) -> Maybe [a]
+uncompress (Nothing, []) = Just []
 uncompress (Nothing, _) = Nothing
 uncompress (Just tree, bits) = uncompress' tree bits
 

@@ -24,12 +24,12 @@ import Text.Printf
 -- if you only have ghc installed :
     -- >choco install cabal 
     -- >cabal update
-    -- >cabal install hspec
+    -- >cabal install hspec // if this fails, go to the next command
     -- >cabal install --lib hspec
     -- >cabal install --lib text
 
 
--- to run test as standalon, open terminal in root directory then :
+-- to run test as standalone, open terminal in root directory then :
 -- $ghci -isrc
 -- ghci>:set -package containers
 -- ghci>:l test\Spec.hs
