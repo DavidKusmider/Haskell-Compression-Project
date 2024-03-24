@@ -1,82 +1,79 @@
-module LZ.LZ78(compress, uncompress) where
+{- |
+  Module      : LZ.LZ78
+  Description : An implementation of LZ78 method (without \0 cheat for end of sequences)
+  Maintainer  : ???
+-}
+module LZ.LZ78(compress, uncompress, subStrLen) where
 
-import Data.List (elemIndex, isPrefixOf)
-import Data.Maybe (fromMaybe)
 import LZ.Dictionaries
+import Data.List (elemIndex, findIndex, isPrefixOf)
+import Data.Maybe (fromMaybe)
 
 
+-- debug
+-- import Debug.Trace (traceShow)
+-- import Debug.Trace
+-- str = "belle echelle !"
+-- dict = ["", "bel", "lle","foobar","be"]
+
+
+-- | LZ78 compress method
 compress :: String -> [(Int, Char)]
-compress [] = [] -- Si la chaîne est vide, retourner une liste vide
-compress str = go str empty [] -- [] est la chaîne compressée
+compress [] = []
+compress str = compress' str empty []
+
+
+-- arguments
+  -- String : la chaine à compresser
+  -- Dictionary : le dictionaire
+  -- [(Int,Char)] : la partie déjà compressee
+compress' :: String -> Dictionary -> [(Int, Char)] ->  [(Int, Char)]
+compress' [] _ compressed = compressed
+compress' str dict compressed = compress' (drop (maxi + 1) str) (dict ++ [newStr]) (compressed ++ [(index, str !! maxi)])
   where
-    go str dict compressed = case string' of
-      [] -> newCompressed
-      _  -> go string' newDict newCompressed
-      where
-        prefix = findLongestPrefix str dict
-        --RECHERCHE DE L'INDEX
-        index = fromMaybe 0 (elemIndex prefix dict)
-        --RECHERCHE DU CHAR
-        (compressedChar, string') = nextCharNextStringAfterPrefix prefix str
-        newDict = dict ++ [concatMaybeChar compressedChar prefix]
-        newCompressed = compressed ++ [(index, compressedChar)]
+    k = map (\s -> subStrLen str s) dict -- calcul longueur sous chaines de str qui correspondent a des elements du dictionnaire
+    --on utilise subStrLen pour tout element s (eventuel substring de str) du dictionnaire
+    -- k c'est comme si on refaisait un dictionnaire
+    maxi = case length str == maximum k of --if the last sequence of the string is already in the dictionnary
+              True -> maximum k - 1 --on considere qu'on utilise pas le prefixe le plus long (mais le 2eme plus long)
+              False -> maximum k
+    index = case elemIndex maxi k of
+              Just v -> v 
+              Nothing -> -1 --theorically unreachable code bc maxi is ALWAYS in k per definition
+    newStr = take (maxi + 1) str --nouveau prefixe a ajouter au dictionnaire
 
 
+
+-- renvoit un fragment à partir d'un tuple (Int, Char)
+  -- String : chaine décompressee
+  -- Dictionary : le dictionaire
+  -- [(Int, Char)] : le reste du message compresse
 uncompress :: [(Int, Char)] -> Maybe String
-uncompress compressedData = go compressedData compressedData [] -- Initialiser la chaîne décompressée avec une chaîne vide, compressedtab égal à compressedData 
+uncompress [] = Just []
+uncompress compressed = uncompress' "" empty compressed
   where
-    go compressedData [] decompressed = Just decompressed -- Si on a fini de parcourir compressedTab, retourner la chaîne décompressée
-    go compressedData [(index, '\0')] decompressed = 
-        case getPrefixAtIndex index compressedData of
-            Just prefix -> Just (decompressed ++ prefix)
-            Nothing -> Nothing -- Retourner Nothing en cas d'erreur dans getPrefixAtIndex
-    go compressedData ((index, compressedChar):rest) decompressed =
-        case getPrefixAtIndex index compressedData of
-            Just prefix -> go compressedData rest (decompressed ++ prefix ++ [compressedChar])
-            Nothing -> Nothing -- Retourner Nothing en cas d'erreur dans getPrefixAtIndex
+    uncompress' :: String -> Dictionary -> [(Int, Char)] -> Maybe String
+    uncompress' decoded dict [] = Just decoded
+    uncompress' decoded dict ((index, char) : rest) =
+      case index < 0 || index >= length dict of
+        True -> Nothing
+        False -> uncompress' (decoded ++ txt) (dict ++ [txt]) rest
+          where
+            txt = (dict !! index) ++ [char]
 
 
 
 
+-- FONCTION UTILITAIRE
 
+-- if substring is the beginning of string, return the length of the substring, else, return 0
+subStrLen :: String -> String -> Int
+subStrLen str substr = subStrLen' 0 str substr 
 
-
---FONCTIONS
-
-concatMaybeChar :: Char -> String -> String --pour concaténer prefixe (String) avec compressedChar(qui est peut etre '\0')
-concatMaybeChar '\0' str = str -- Si Maybe Char est Nothing, renvoyer simplement la chaîne
-concatMaybeChar c str = str ++ [c] -- Si Maybe Char contient un caractère, concaténer le caractère à la fin de la chaîne
-
-nextCharNextStringAfterPrefix :: String -> String -> (Char, String) --retourne le nextChar et le restant du string
-nextCharNextStringAfterPrefix prefix str = -- on regarde si il y a un char 
-    case removePrefix prefix str of
-        (c:rest) -> (c, rest)
-        _        -> ('\0', [])
-
-
-findLongestPrefix :: String -> [String] -> String
-findLongestPrefix str [] = "" -- Si le dictionnaire est vide, retourner une chaîne vide
-findLongestPrefix str dict = go str "" -- Initialiser avec une chaîne vide
-  where
-    go [] prefix = prefix -- Si la chaîne est vide, retourner le préfixe trouvé jusqu'à présent
-    go (x:xs) prefix
-      | (prefix ++ [x]) `elem` dict = go xs (prefix ++ [x]) -- Si le préfixe est présent dans le dictionnaire, le prolonger
-      | otherwise = prefix -- Si le préfixe n'est pas présent dans le dictionnaire, retourner le préfixe trouvé jusqu'à présent
-
--- Retirer un préfixe d'une chaîne
-removePrefix :: String -> String -> String
-removePrefix prefix str
-  | prefix `isPrefixOf` str = drop (length prefix) str
-  | otherwise = error "Le prefixe specifie n'est pas present dans la chaine."
-
-
-
-getPrefixAtIndex :: Int -> [(Int, Char)] -> Maybe String --permet de recup le prefix correspondant a un index
-getPrefixAtIndex index compressedData = go index compressedData ""
-  where
-    go 0 _ prefix = Just prefix -- Quand on a fini
-    go index compressedData prefix = --si l'index ne vaut pas 0, on continue de constituer le prefixe
-      case compressedData !! (index-1) of --si on trouve bien quelque chose 
-        (i, maybeChar) -> 
-          go i compressedData (concatMaybeChar maybeChar "" ++ prefix)
-        _ -> Nothing
+subStrLen' :: Int -> String -> String -> Int
+subStrLen' acc _ [] = acc --si on a fini de parcourir substring, a ce moment il est bien prefixe donc on retourne la longueur (acc) trouvee
+subStrLen' acc [] _ = 0 --si string est vide on return 0
+subStrLen' acc (x:xs) (y:ys)
+    | x == y = subStrLen' (acc+1) xs ys --si x==y alors on ajoute 1 a la longueur du prefixe trouve et on continue
+    -- de chercher un prefixe plus long
+    | otherwise = 0 --sinon en fait substr n'est pas un prefixe donc l'index vaut 0

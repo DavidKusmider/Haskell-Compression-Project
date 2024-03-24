@@ -1,6 +1,5 @@
 import RLE
 import LZ.LZ78
-import LZ.LZ78bis
 import LZ.LZW
 import Statistic.Huffman
 import Statistic.ShannonFano
@@ -45,10 +44,8 @@ spec_function = do
         describe (printf "Testing string : '%s'" inputAsString) $ do
             it "RLE " $
                 RLE.uncompress (RLE.compress inputAsString) `shouldBe` (Just inputAsString)
-            it "LZ78b "$
+            it "LZ78 "$
                 LZ.LZ78.uncompress (LZ.LZ78.compress inputAsString) `shouldBe` (Just inputAsString)
-            it "LZ78bis "$
-                LZ.LZ78bis.uncompress (LZ.LZ78bis.compress inputAsString) `shouldBe` (Just inputAsString)
             it "LZW "$
                 LZ.LZW.uncompress (LZ.LZW.compress inputAsString) `shouldBe` (Just inputAsString)
             it "ShanonFano "$
