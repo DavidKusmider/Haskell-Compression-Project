@@ -1,11 +1,10 @@
 import RLE
 import LZ.LZ78
+import LZ.LZ78bis
 import LZ.LZW
 import Statistic.Huffman
 import Statistic.ShannonFano
 import Statistic.EncodingTree
-
-import LZ.LZ78bis
 
 import Test.Hspec
 import Control.Monad
@@ -18,7 +17,9 @@ import Data.Text.IO as Text
 import Text.Printf
 
 
--- if running without stack on windows, run terminal as admin
+-- you need Hspecs and Text librairies to run test
+-- use either cabal or stack to install dependecies
+-- if you only have ghc installed :
     -- >choco install cabal 
     -- >cabal update
     -- >cabal install hspec
@@ -27,11 +28,10 @@ import Text.Printf
 
 
 -- to run test, open terminal in root directory then :
--- >ghci -isrc .\test\Spec.hs
--- ghci> main
-
--- you can refresh file with :
--- ghci> :l test\Spec.hs 
+-- >ghci -isrc
+-- ghci>:set -package containers
+-- ghci>:l test\Spec.hs
+-- ghci>main
 
 
 readExamples :: IO [Text]
@@ -50,13 +50,12 @@ spec_function = do
             it "LZ78bis "$
                 LZ.LZ78bis.uncompress (LZ.LZ78bis.compress inputAsString) `shouldBe` (Just inputAsString)
             it "LZW "$
-                 LZ.LZW.uncompress (LZ.LZW.compress inputAsString) `shouldBe` (Just inputAsString)
+                LZ.LZW.uncompress (LZ.LZW.compress inputAsString) `shouldBe` (Just inputAsString)
             it "ShanonFano "$
                 Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.ShannonFano.treeShannonFano inputAsString) `shouldBe` (Just inputAsString)
             it "Huffman "$
                 Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.Huffman.treeHuffman inputAsString) `shouldBe` (Just inputAsString)
  
-
 
 main :: IO ()
 main = hspec spec_function

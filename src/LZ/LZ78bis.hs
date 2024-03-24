@@ -1,6 +1,6 @@
 {- |
   Module      : LZ.LZ78
-  Description : An implementation of LZ78 method
+  Description : An implementation of LZ78 method (without \0 cheat for end of sequences)
   Maintainer  : ???
 -}
 module LZ.LZ78bis(compress, uncompress, subStrLen) where
@@ -66,7 +66,6 @@ uncompress' decoded dict ((index, char) : rest) =
 
 
 -- FONCTION UTILITAIRE
-
 
 -- if substring is the beginning of string, return the length of the substring, else, return 0
 subStrLen :: String -> String -> Int
