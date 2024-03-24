@@ -5,7 +5,7 @@ import Statistic.Huffman
 import Statistic.EncodingTree as EncodingTree
 import Statistic.Source (entropy)
 import Statistic.Bit
-import LZ.LZ78
+import LZ.LZ78bis as LZ78
 import LZ.LZW as LZW
 import LZ.Dictionaries
 
@@ -30,14 +30,16 @@ main = do
             compressWith (EncodingTree.compress treeHuffman inputString) inputString
         
         "3" -> do
-            let str = "aaaaaaaaaaabbbbbbbbbbbbcccccccccccc"
-                dict = empty
-                compressedLZ78 = compressLZ78 str dict
+            let str = "abracadadra"
+                compressedLZ78 = LZ78.compress str
             putStrLn "Chaîne originale :"
             putStrLn str
             putStrLn "Chaîne compressée :"
             print compressedLZ78
-            putStrLn $ "Chaîne decompressée : " ++ uncompressLZ78 compressedLZ78 compressedLZ78
+            putStrLn "Chaîne décompressée :"
+            case LZ78.uncompress compressedLZ78 of
+                Just decompressedStr -> putStrLn decompressedStr
+                Nothing -> putStrLn "La décompression a échoué."
 
         "4" -> do
             let input = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."

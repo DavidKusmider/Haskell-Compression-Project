@@ -22,6 +22,7 @@ library
   exposed-modules:
       LZ.Dictionaries
       LZ.LZ78
+      LZ.LZ78bis
       LZ.LZW
       RLE
       Statistic.Bit
@@ -37,6 +38,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , hspec
   default-language: Haskell2010
 
 executable compress-exe
@@ -50,6 +52,7 @@ executable compress-exe
       base >=4.7 && <5
     , compress
     , containers
+    , hspec
   default-language: Haskell2010
 
 test-suite compress-test
@@ -64,4 +67,5 @@ test-suite compress-test
       base >=4.7 && <5
     , compress
     , containers
+    , hspec
   default-language: Haskell2010
