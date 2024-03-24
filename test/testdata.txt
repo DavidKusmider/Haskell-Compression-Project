@@ -1,4 +1,9 @@
 belle echelle !
+belle échelle!b
+belle échelle!be
+belle échelle!belle échelle!
+abcdddeeee
+
 a
 aa
 aaa
@@ -13,10 +18,6 @@ aabaaaaaaaa
 aabaaaaaaaaa
 aaaabaaaaaaaa
 aaaaaaaaaaaaa
-belle échelle!b
-belle échelle!be
-belle échelle!belle échelle!
-abcdddeeee
 aaaabbabbabbba
 
 chaine vide
