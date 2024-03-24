@@ -43,18 +43,18 @@ spec_function = do
     forM_ examples $ \input ->
         let inputAsString = unpack input in
         describe (printf "Testing string : '%s'" inputAsString) $ do
-            -- it "RLE " $
-            --     RLE.uncompress (RLE.compress inputAsString) `shouldBe` (Just inputAsString)
-            -- it "LZ78b "$
-            --     LZ.LZ78.uncompress (LZ.LZ78.compress inputAsString) `shouldBe` (Just inputAsString)
+            it "RLE " $
+                RLE.uncompress (RLE.compress inputAsString) `shouldBe` (Just inputAsString)
             it "LZ78b "$
+                LZ.LZ78.uncompress (LZ.LZ78.compress inputAsString) `shouldBe` (Just inputAsString)
+            it "LZ78bis "$
                 LZ.LZ78bis.uncompress (LZ.LZ78bis.compress inputAsString) `shouldBe` (Just inputAsString)
-            -- it "LZW "$
-            --      LZ.LZW.uncompress (LZ.LZW.compress inputAsString) `shouldBe` (Just inputAsString)
-            -- it "ShanonFano "$
-            --     Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.ShannonFano.treeShannonFano inputAsString) `shouldBe` (Just inputAsString)
-            -- it "Huffman "$
-            --     Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.Huffman.treeHuffman inputAsString) `shouldBe` (Just inputAsString)
+            it "LZW "$
+                 LZ.LZW.uncompress (LZ.LZW.compress inputAsString) `shouldBe` (Just inputAsString)
+            it "ShanonFano "$
+                Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.ShannonFano.treeShannonFano inputAsString) `shouldBe` (Just inputAsString)
+            it "Huffman "$
+                Statistic.EncodingTree.uncompress (Statistic.EncodingTree.compress Statistic.Huffman.treeHuffman inputAsString) `shouldBe` (Just inputAsString)
  
 
 
