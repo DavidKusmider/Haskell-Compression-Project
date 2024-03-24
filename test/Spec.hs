@@ -5,10 +5,13 @@ import Statistic.Huffman
 import Statistic.ShannonFano
 import Statistic.EncodingTree
 
+
+--import needed for test
 import Test.Hspec
 import Control.Monad
 import Data.Semigroup
 
+--import needed for reading test file testdata.txt
 import qualified Data.Text as Text
 import Data.Text (Text)
 import Data.Text as Text
@@ -26,8 +29,8 @@ import Text.Printf
     -- >cabal install --lib text
 
 
--- to run test, open terminal in root directory then :
--- >ghci -isrc
+-- to run test as standalon, open terminal in root directory then :
+-- $ghci -isrc
 -- ghci>:set -package containers
 -- ghci>:l test\Spec.hs
 -- ghci>main

@@ -9,7 +9,6 @@ module RLE(compress, uncompress) where
 compress :: Eq a => [a] -> [(a, Int)]
 compress [] = []
 compress (x:xs) = compress' [] xs x 1
---compress (x:xs) = compress' xs x 1
 
 -- Fonction auxiliaire pour la compression RLE
 compress' :: Eq a => [(a, Int)] -> [a] -> a -> Int -> [(a, Int)]
@@ -20,16 +19,8 @@ compress' compressed (x:xs) sym count
   where newCompressed = compressed ++ [(sym, count)]
 
 
--- ancienne version (récursivité non terminal)
--- compress' :: Eq a => [a] -> a -> Int -> [(a, Int)]
--- compress' [] sym count = [(sym, count)]
--- compress' (x:xs) sym count
---   | x == sym = compress' xs sym (count + 1)
---   | otherwise = (sym, count) : compress' xs x 1
-
-
 -- | RLE uncompress method
--- If input cannot be uncompressed, returns `Nothing`
+-- If input cannot be uncompressed, returns `Nothing` (ie null or negative int)
 uncompress :: [(a, Int)] -> Maybe [a]
 uncompress [] = Just []
 uncompress msg = uncompress' [] msg
@@ -41,7 +32,16 @@ uncompress' decoded ((sym, count):rest) =
    then Nothing
    else uncompress' (decoded ++ replicate count sym) rest
 
+
+
+
 -- ancienne version (récursivité non terminal)
+-- compress' :: Eq a => [a] -> a -> Int -> [(a, Int)]
+-- compress' [] sym count = [(sym, count)]
+-- compress' (x:xs) sym count
+--   | x == sym = compress' xs sym (count + 1)
+--   | otherwise = (sym, count) : compress' xs x 1
+
 -- uncompress :: [(a, Int)] -> Maybe [a]
 -- uncompress [] = Just []
 -- uncompress ((sym, count):rest) = case uncompress rest of 
