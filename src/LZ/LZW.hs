@@ -34,19 +34,21 @@ compress textToCompress = encode textToCompress ascii "" 256 []
 -- | LZW uncompress method
 -- If input cannot be uncompressed, returns `Nothing`
 uncompress :: [Int] -> Maybe String 
-uncompress arrayToUnCompress = Just $ decode arrayToUnCompress ascii 0 "" 256 "" 
+uncompress arrayToUnCompress = Just $ decode arrayToUnCompress ascii "" "" 
   where
-    decode :: [Int] -> [String] -> Int -> String -> Int -> String -> String 
-    decode [] dict w _ _ result = 
+    decode :: [Int] -> [String] -> String -> String -> String 
+    decode [] dict  _  result = 
        result
-    decode (c:cs) dict w prevString nextCode result
+    decode (c:cs) dict prevString result
       | c >= 0 && c < length dict = 
-          case elemIndex combinedChar dict of
-            Just index -> decode cs dict w currentChar nextCode (result ++ currentChar)
-            Nothing    -> decode cs (dict ++ [prevString ++ [head currentChar]]) c currentChar nextCode (result ++ currentChar)
-      | otherwise = decode cs newDict c chaine nextCode (result ++ chaine)
+          case elemIndex combinedChar dict of -- on cherche combinedChar dans le dictionnaire
+            Just index -> decode cs dict currentChar (result ++ currentChar)
+            Nothing    -> decode cs (dict ++ [prevString ++ [head currentChar]]) currentChar (result ++ currentChar)
+      | otherwise = decode cs newDict chaine (result ++ chaine)
       where 
-        currentChar = dict !! c
+        currentChar = dict !! c -- extraction de l'element à l'indice c
         combinedChar = prevString ++ currentChar
-        chaine = prevString ++ [head prevString]
-        newDict = dict ++ [chaine]
+        chaine = prevString ++ [head prevString] -- cas otherwise
+        newDict = dict ++ [chaine] -- cas otherwise
+
+
